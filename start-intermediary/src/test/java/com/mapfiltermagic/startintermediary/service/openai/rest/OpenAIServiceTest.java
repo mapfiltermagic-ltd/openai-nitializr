@@ -1,4 +1,4 @@
-package com.mapfiltermagic.startintermediary.service.rest.openai;
+package com.mapfiltermagic.startintermediary.service.openai.rest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,9 +37,9 @@ public class OpenAIServiceTest {
     private static final String OPENAI_SECRET_KEY = "sk-5v3LxuqRCq2KzMAeiVgciDTDhtyWZe8HKhdmd7V27PAwawyaLzfgDdrArBrV";
 
     // These are file path constants for mock data files.
-    private static final String OPENAI_REQUEST_CODE_COMPLEITION_PATH = "service/rest/openai/openai_request_code_completion.json";
-    private static final String OPENAI_RESPONSE_CODE_COMPLEITION_PATH = "service/rest/openai/openai_response_code_completion.json";
-    private static final String OPENAI_ERROR_INVALID_API_KEY_PATH = "service/rest/openai/openai_error_invalid_api_key.json";
+    private static final String OPENAI_REQUEST_CODE_COMPLEITION_PATH = "service/openai/rest/openai_request_code_completion.json";
+    private static final String OPENAI_RESPONSE_CODE_COMPLEITION_PATH = "service/openai/rest/openai_response_code_completion.json";
+    private static final String OPENAI_ERROR_INVALID_API_KEY_PATH = "service/openai/rest/openai_error_invalid_api_key.json";
 
     @Captor
     ArgumentCaptor<ClientRequest> clientRequestCaptor;
@@ -106,7 +106,7 @@ public class OpenAIServiceTest {
             openAIService.createCompletion(openAIRequest);
         });
 
-        assertTrue(StringUtils.contains(exception.getMessage(), "invalid_api_key"));
+        assertTrue(StringUtils.contains(exception.getReason(), "invalid_api_key"));
         assertTrue(exception.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

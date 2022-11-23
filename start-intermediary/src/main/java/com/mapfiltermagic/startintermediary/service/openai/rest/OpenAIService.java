@@ -1,4 +1,4 @@
-package com.mapfiltermagic.startintermediary.service.rest.openai;
+package com.mapfiltermagic.startintermediary.service.openai.rest;
 
 import java.util.function.Consumer;
 

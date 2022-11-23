@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "openai.base-url",
+    "type": "java.lang.String",
+    "description": "Base URL from which all requests for the OpenAI API are sent out to."
+  },
+  {
+    "name": "openai.secret-key",
+    "type": "java.lang.String",
+    "description": "Secret API key for OpenAI usage."
+  }
+]}

@@ -1,0 +1,6 @@
+{
+    "model": "code-davinci-002",
+    "prompt": "/* Import required packages and create a Java Spring Boot GET endpoint that takes in two numbers and returns their sum */",
+    "max_tokens": 4096,
+    "temperature": 0
+}

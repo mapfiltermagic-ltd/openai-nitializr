@@ -1,0 +1,19 @@
+{
+    "id": "cmpl-6EC8LAnAfveuqsv0Gq4ORgWwsy5DB",
+    "object": "text_completion",
+    "created": 1668841253,
+    "model": "code-davinci-002",
+    "choices": [
+        {
+            "text": "\n\npackage com.example.demo;\n\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class AddController {\n\n    @GetMapping(\"/add\")\n    public int add(@RequestParam(value = \"num1\") int num1, @RequestParam(value = \"num2\") int num2) {\n        return num1 + num2;\n    }\n}",
+            "index": 0,
+            "logprobs": null,
+            "finish_reason": "stop"
+        }
+    ],
+    "usage": {
+        "prompt_tokens": 22,
+        "completion_tokens": 133,
+        "total_tokens": 155
+    }
+}

@@ -20,13 +20,17 @@ public class OpenAIRequest {
     private int topP; // alternative to sampling with temperature, called nucleus sampling
 
     private int temperature; // what sampling temperature to use. Higher values means the model will take more risks
+    
     private int n; // how many completions to generate for each prompt
+    
     private int logprobs; // include the log probabilities on the logprobs most likely tokens, as well the chosen tokens
 
     private boolean stream; // whether to stream back partial progress
 
     private String model; // id of the model to use
+    
     private String prompt; // the prompt(s) to generate completions for, encoded as a string, array of strings, etc.
+    
     private String stop; // up to 4 sequences where the API will stop generating further tokens
 
 }

@@ -12,8 +12,11 @@ import lombok.ToString;
 public class Error {
 
     private String message;
+
     private String type;
+
     private String param;
+
     private String code;
 
 }

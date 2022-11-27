@@ -19,6 +19,7 @@ public class Choice {
     private String finishReason;
 
     private int index;
+    
     private int logprobs;
 
 }

@@ -1,6 +1,6 @@
 package com.mapfiltermagic.startintermediary.service.openai;
 
-import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mapfiltermagic.startintermediary.model.openai.request.OpenAIRequest;
@@ -9,7 +9,7 @@ import com.mapfiltermagic.startintermediary.service.openai.rest.OpenAIService;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
 public class CodeCompletionService {
 

@@ -17,8 +17,11 @@ import lombok.NoArgsConstructor;
 public class OpenAIResponse {
     
     private int created;
+
     private String id;
+
     private String object;
+
     private String model;
 
     private List<Choice> choices;

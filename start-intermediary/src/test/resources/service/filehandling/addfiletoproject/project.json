@@ -1,0 +1,13 @@
+{
+    "name": "world",
+    "type": "maven-project",
+    "description": "Hello world",
+    "groupId": "com.hello",
+    "artifactId": "world",
+    "version": "17",
+    "bootVersion": "2.7.6",
+    "packaging": "jar",
+    "applicationName": "world",
+    "language": "java",
+    "packageName": "com.hello.world"
+}

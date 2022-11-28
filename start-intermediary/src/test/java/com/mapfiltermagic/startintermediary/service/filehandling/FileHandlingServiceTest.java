@@ -97,12 +97,12 @@ public class FileHandlingServiceTest {
     }
 
     @Test
-    public void testGenerateFileFromCodeCompletion() throws IOException {
+    public void generateFileFromCodeCompletion_AddTwoNumbersEndpointPrompt_ShouldReturnAddControllerJavaFileData() throws IOException {
         File addControllerFile = getFileFromResource(ADD_CONTROLLER_CODE_COMPLETION_EXPECTED_JAVA_FILE_PATH);
 
-        doReturn(ADD_TWO_NUMBERS_COMPLETED_JAVA_CODE_RESPONSE).when(codeCompletionService).getCodeCompletion(anyString());
+        doReturn(ADD_TWO_NUMBERS_COMPLETED_JAVA_CODE_RESPONSE).when(codeCompletionService).getCodeCompletion(anyString(), anyString());
 
-        byte[] actualOutputData = fileHandlingService.generateFileFromCodeCompletion(ADD_TWO_NUMBERS_PROMPT);
+        byte[] actualOutputData = fileHandlingService.generateFileFromCodeCompletion(ADD_TWO_NUMBERS_PROMPT, "GET");
 
         File tempExpectedJavaFile = File.createTempFile("temp_expected_java_file", null, null);
         tempExpectedJavaFile.deleteOnExit();

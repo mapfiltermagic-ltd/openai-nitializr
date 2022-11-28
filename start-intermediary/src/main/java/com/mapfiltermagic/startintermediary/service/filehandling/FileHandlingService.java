@@ -46,12 +46,14 @@ public class FileHandlingService {
      */
     private static final String JAR_FILE_PREFIX = "jar:";
 
+    // TODO: Remove this
     /**
      * This is used to build out the URI of the generated file. The package name contains '/' characters, and the UriComponentsBuilder does not
      * support that. So this is temporarily placed in the URI format and will be later replaced with the actual package subpath.
      */
     private static final String REPLACE_WITH_PACKAGE_SUBPATH_INDICATOR = "REPLACEWITHPACKAGESUBPATH";
 
+    // TODO: Update this to use format specifiers
     /**
      * This is the URI format of where the generated file will be built to relative to the root directory of a zip file.
      */
@@ -60,14 +62,17 @@ public class FileHandlingService {
 
     private final CodeCompletionService codeCompletionService;
 
+    // TODO: Rename this to generateCodeCompletionFileData
+    // TODO: Fix documentation here
     /**
      * Gets and uses it to build a Java code file.
      *
      * @param prompt what to prompt the GPT-3 model with
+     * @param endpointType which REST method the endpoint should be
      * @return the populated Java code file data
      */
-    public byte[] generateFileFromCodeCompletion(String prompt) {
-        String generatedCode = codeCompletionService.getCodeCompletion(prompt);
+    public byte[] generateFileFromCodeCompletion(String prompt, String endpointType) {
+        String generatedCode = codeCompletionService.getCodeCompletion(prompt, endpointType);
         try {
             File tempJavaFile = File.createTempFile("temp_java_file", null, null);
             tempJavaFile.deleteOnExit();
@@ -78,11 +83,11 @@ public class FileHandlingService {
         } catch (IOException ex) {
             log.error("Encountered an exception while creating a temporary java file => {}", ex.getMessage());
 
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Encountered an exception while creating a temporary zip file", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Encountered an exception while creating a temporary zip file", ex);
         }
     }
 
+    // TODO: Update method name to addFileDataToProjectArchive
     /**
      * Inserts a given file into an existing archive.
      *
@@ -98,8 +103,7 @@ public class FileHandlingService {
         } catch (IOException ex) {
             log.error("Encountered an exception while creating a temporary zip file => {}", ex.getMessage());
 
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Encountered an exception while creating a temporary zip file", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Encountered an exception while creating a temporary zip file", ex);
         }
         URI uri = URI.create(JAR_FILE_PREFIX + tempProjectArchive.toUri());
         // Mount a file system at the zip file path that is prefixed as a jar file in order to edit its contents without unzipping it.
@@ -125,6 +129,7 @@ public class FileHandlingService {
         }
     }
 
+    // TODO: Refactor this to just use String.format(). URI building was totally unecessary.
     private String buildPathForGeneratedFile(String fileName, Project project) {
         try {
             UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(PROJECT_DIRECTORY_PATH_FORMAT);

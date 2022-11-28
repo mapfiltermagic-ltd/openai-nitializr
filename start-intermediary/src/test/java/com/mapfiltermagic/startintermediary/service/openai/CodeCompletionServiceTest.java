@@ -32,7 +32,10 @@ import com.mapfiltermagic.startintermediary.service.openai.rest.OpenAIService;
 public class CodeCompletionServiceTest {
 
     private static final String OPENAI_RESPONSE_CODE_COMPLEITION_PATH = "service/openai/openai_response_code_completion.json";
-    private static final String OPENAI_REQUEST_CODE_COMPLEITION_PATH = "service/openai/openai_request_code_completion.json";
+
+    private static final String OPENAI_RESPONSE_CODE_COMPLEITION_NO_CHOICES_PATH = "service/openai/openai_response_code_completion_no_choices.json";
+
+    private static final String OPENAI_REQUEST_CODE_COMPLETION_PATH = "service/openai/openai_request_code_completion.json";
 
     private static ObjectMapper objectMapper;
 
@@ -60,17 +63,24 @@ public class CodeCompletionServiceTest {
     
         doReturn(openAIResponse).when(openAIService).createCompletion(any(OpenAIRequest.class));
 
-        String prompt = "/* Import required packages and create a Java Spring Boot GET endpoint that takes in two numbers and returns their sum */";
+        String prompt = "takes in two numbers and returns their sum";
+        String endpointType = "GET";
 
-        String choiceText = codeCompletionService.getCodeCompletion(prompt);
+        String choiceText = codeCompletionService.getCodeCompletion(prompt, endpointType);
 
         verify(openAIService, times(1)).createCompletion(openAIRequestCaptor.capture());
 
-        OpenAIRequest expectedOpenAIRequest = getOpenAIRequest(OPENAI_REQUEST_CODE_COMPLEITION_PATH);
+        OpenAIRequest expectedOpenAIRequest = getOpenAIRequest(OPENAI_REQUEST_CODE_COMPLETION_PATH);
 
-        assertEquals(expectedOpenAIRequest,openAIRequestCaptor.getValue());
+        assertEquals(expectedOpenAIRequest, openAIRequestCaptor.getValue());
 
-        assertTrue(StringUtils.equalsAny(choiceText, openAIResponse.getChoices().get(0).getText()));
+        String expectedChoiceText
+                = "package com.example.demo;\n\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.anno"
+                + "tation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class AddControll"
+                + "er {\n\n    @GetMapping(\"/add\")\n    public int add(@RequestParam(value = \"num1\") int num1, @RequestParam(value = \"num2\") i"
+                + "nt num2) {\n        return num1 + num2;\n    }\n}";
+
+        assertTrue(StringUtils.equals(choiceText, expectedChoiceText));
     }
 
     @Test
@@ -80,15 +90,58 @@ public class CodeCompletionServiceTest {
                 + "You can find your API key at https://beta.openai.com., type=invalid_request_error, param=null, code=invalid_api_key))"); 
         doThrow(ex).when(openAIService).createCompletion(any(OpenAIRequest.class));
 
-        String prompt = "/* Import required packages and create a Java Spring Boot GET endpoint that takes in two numbers and returns their sum */";
-
+        String prompt = "takes in two numbers and returns their sum";
+        String endpointType = "GET";
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            codeCompletionService.getCodeCompletion(prompt);
+            codeCompletionService.getCodeCompletion(prompt, endpointType);
         });
 
         verify(openAIService, times(1)).createCompletion(any(OpenAIRequest.class));
 
         assertTrue(StringUtils.contains(exception.getReason(), "invalid_api_key"));
+        assertTrue(exception.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void getCodeCompletion_CreateCompletionReturnsNoChoices_ShouldThrowException() throws Exception {
+        OpenAIResponse openAIResponse = getOpenAIResponse(OPENAI_RESPONSE_CODE_COMPLEITION_NO_CHOICES_PATH);
+
+        doReturn(openAIResponse).when(openAIService).createCompletion(any(OpenAIRequest.class));
+
+        String prompt = "takes in two numbers and returns their sum";
+        String endpointType = "GET";
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            codeCompletionService.getCodeCompletion(prompt, endpointType);
+        });
+
+        verify(openAIService, times(1)).createCompletion(any(OpenAIRequest.class));
+
+        assertTrue(exception.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR);
+        assertTrue(StringUtils.contains(exception.getReason(), "No code was generated"));
+    }
+
+    @Test
+    public void determineFileNameFromCode_HappyPath() {
+        String expectedFileName = "AddController";
+        String inputCode
+                = "package com.example.demo;\n\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.anno"
+                + "tation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\npublic class AddControll"
+                + "er {\n\n    @GetMapping(\"/add\")\n    public int add(@RequestParam(value = \"num1\") int num1, @RequestParam(value = \"num2\") i"
+                + "nt num2) {\n        return num1 + num2;\n    }\n}";
+        String actualOutput = codeCompletionService.determineFileNameFromCode(inputCode);
+
+        assertTrue(StringUtils.equals(actualOutput, expectedFileName));
+    }
+
+    @Test
+    public void determineFileNameFromCode_InputHasNoClassNameDefinition_ShouldThrowInternalServerException() {
+        String inputCode
+                = "@GetMapping(\"/sum\")\n    public int sum(@RequestParam(value = \"a\") int a, @RequestParam(value = \"b\") int b) {\n        retu"
+                + "rn a + b;\n    }";
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            codeCompletionService.determineFileNameFromCode(inputCode);
+        });
+
         assertTrue(exception.getStatus() == HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

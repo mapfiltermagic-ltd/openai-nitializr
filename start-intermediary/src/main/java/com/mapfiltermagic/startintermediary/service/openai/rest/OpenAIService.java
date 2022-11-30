@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OpenAIService {
 
     private static final String CREATE_COMPLETION_URI = "/v1/completions";
+
     private static final String BEARER_TOKEN_PREFIX = "Bearer ";
 
     private final String secretKey;
@@ -39,7 +41,7 @@ public class OpenAIService {
      * @param webClient
      */
     @Autowired
-    public OpenAIService(@Value("${openai.base-url}") String baseUrl, @Value("${openai.secret-key") String secretKey) {
+    public OpenAIService(@Value("${openai.base-url}") String baseUrl, @Value("${openai.secret-key}") String secretKey) {
         this.secretKey = secretKey;
         this.webClient = WebClientUtil.getWebClient(baseUrl);
     }
@@ -55,11 +57,12 @@ public class OpenAIService {
             OpenAIResponse openAIResponse = webClient.post()
                 .uri(CREATE_COMPLETION_URI)
                 .headers(getCreateCompletionHeaders())
+                .body(BodyInserters.fromValue(openAIRequest))
                 .retrieve()
                 .bodyToMono(OpenAIResponse.class)
                 .block();
 
-            log.debug("Successfully called createCompletion endpoint");
+            log.info("Successfully called createCompletion endpoint");
 
             return openAIResponse;
         } catch (WebClientResponseException ex) {

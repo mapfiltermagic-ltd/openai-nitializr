@@ -12,8 +12,8 @@ public class WebSecurityConfig {
 
     @Bean
     SecurityWebFilterChain webHttpSecurity(ServerHttpSecurity http) {                       
-        http.cors();
-                                                 
+        http.csrf().and().cors().disable();
+
         return http.build();
     }
 

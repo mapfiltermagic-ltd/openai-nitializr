@@ -20,6 +20,8 @@
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<mockwebserver.version>4.10.0</mockwebserver.version>
     	<commons-io.version>2.11.0</commons-io.version>
+		<commons-codec.version>1.15</commons-codec.version>
+		<logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
 	</properties>
 
 	<dependencies>
@@ -34,16 +36,26 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency> -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-integration</artifactId>
 		</dependency>
 
 		<dependency>
@@ -77,6 +89,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${commons-codec.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>mockwebserver</artifactId>
 			<version>${mockwebserver.version}</version>
@@ -93,6 +111,12 @@
 			<artifactId>commons-io</artifactId>
     		<version>${commons-io.version}</version>
 		</dependency>
+
+	<dependency>
+    	<groupId>net.logstash.logback</groupId>
+    	<artifactId>logstash-logback-encoder</artifactId>
+    	<version>${logstash-logback-encoder.version}</version>
+	</dependency>
 
 	</dependencies>
 

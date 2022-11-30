@@ -31,8 +31,7 @@ public final class WebClientUtil {
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(getHttpClient()))
                 .baseUrl(baseUrl)
-                .filter(WebClientFilter.logRequest())
-                .filter(WebClientFilter.logResponse())
+                .filter(new LoggingExchangeFilterFunction(baseUrl))
                 .build();
     }
 
@@ -43,11 +42,11 @@ public final class WebClientUtil {
      */
     private static HttpClient getHttpClient() {
         HttpClient httpClient = HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .responseTimeout(Duration.ofMillis(5000))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 15000)
+                .responseTimeout(Duration.ofMillis(15000))
                 .doOnConnected(conn -> 
-                        conn.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS))
-                        .addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS))
+                        conn.addHandlerLast(new ReadTimeoutHandler(15000, TimeUnit.MILLISECONDS))
+                        .addHandlerLast(new WriteTimeoutHandler(15000, TimeUnit.MILLISECONDS))
                 );
 
         return httpClient;

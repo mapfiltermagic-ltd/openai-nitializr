@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mapfiltermagic.startintermediary.model.initializr.Project;
+import com.mapfiltermagic.startintermediary.model.initializr.IntermediaryRequest;
 import com.mapfiltermagic.startintermediary.service.openai.CodeCompletionService;
 
 // TODO: I need to address how these tests will run in a container given paths assume access to directories in the project folder?
@@ -38,7 +38,7 @@ public class FileHandlingServiceTest {
 
     private static final String INPUT_ZIP_PROJECT_FILE_PATH = "service/filehandling/addfiletoproject/project_without_generated_file.zip";
 
-    private static final String PROJECT_FILE_PATH = "service/filehandling/addfiletoproject/project.json";
+    private static final String INTERMEDIARY_REQUEST_FILE_PATH = "service/filehandling/addfiletoproject/intermediary_request.json";
 
     private static final String ADD_TWO_NUMBERS_PROMPT = "takes in two numbers and returns their sum";
 
@@ -72,7 +72,7 @@ public class FileHandlingServiceTest {
 
         File inputZipFile = getFileFromResource(INPUT_ZIP_PROJECT_FILE_PATH);
         byte[] inputProjectArchive = getByteArrayFromFile(inputZipFile);
-        Project project = getProject(PROJECT_FILE_PATH);
+        IntermediaryRequest project = getProjectRequest(INTERMEDIARY_REQUEST_FILE_PATH);
 
         project.setProjectData(inputProjectArchive);
 
@@ -81,6 +81,7 @@ public class FileHandlingServiceTest {
         String directory = "src/test/resources/service/filehandling/temp-output.zip";
 
         Path actualZipFile = Files.write(new File(directory).toPath(), actualProjectArchiveData);
+
         URI uri = URI.create("jar:" + actualZipFile.toUri());
 
         Map<String, String> env = new HashMap<>();
@@ -115,8 +116,8 @@ public class FileHandlingServiceTest {
         Files.delete(actualJavaFilePath);
     }
 
-    private Project getProject(String pathOfDataFile) throws IOException {
-        return (Project) objectMapper.readValue(this.getClass().getClassLoader().getResource(pathOfDataFile), Project.class);
+    private IntermediaryRequest getProjectRequest(String pathOfDataFile) throws IOException {
+        return (IntermediaryRequest) objectMapper.readValue(this.getClass().getClassLoader().getResource(pathOfDataFile), IntermediaryRequest.class);
      }
 
     private File getFileFromResource(String pathToResource) {

@@ -30,7 +30,7 @@ public class CodeCompletionService {
      */
     private static final int MAX_TOKENS_ARGUMENT = 4096;
 
-    private static final int TEMPERATURE_ARGUMENT = 0;
+    private static final double TEMPERATURE_ARGUMENT = 0.0;
 
     /**
      * The expectation is that OpenAI will return generated code prepended with two spaces at the very top. This is used to remove those characters.
@@ -88,7 +88,10 @@ public class CodeCompletionService {
      * @return the filename without an extension
      */
     public String determineFileNameFromCode(String generatedCode) {
+        log.info("Determining file name from {}", generatedCode);
+
         String restOfCode = StringUtils.substringAfter(generatedCode, CODE_THAT_COMES_IMMEDIATELY_BEFORE_CLASS_NAME);
+        log.info("Rest of code: {}", restOfCode);
         if (!StringUtils.equals(restOfCode, StringUtils.EMPTY)) {
             String[] restOfCodeAsWordList = StringUtils.split(restOfCode, StringUtils.SPACE);
             if (ArrayUtils.isNotEmpty(restOfCodeAsWordList)) {
@@ -124,6 +127,10 @@ public class CodeCompletionService {
     }
 
     private String stagePromptForCompletionRequest(String prompt, String requestType) {
+        String updatedPrompt = String.format(PROMPT_FORMAT, requestType, prompt);
+
+        log.debug("Staged prompt for request as: {}", updatedPrompt);
+
         return String.format(PROMPT_FORMAT, requestType, prompt);
     }
 

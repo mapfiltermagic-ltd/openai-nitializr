@@ -12,11 +12,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Project {
+public class IntermediaryRequest {
 
 	private byte[] projectData;
 
-	private String name; // ultimately only changes the name of main application file
+	private String prompt;
+
+	private String endpointType;
+
+	private String name;
  
 	private String type; // project type e.g. maven, gradle groovy, or gradle kotlin
 
@@ -32,7 +36,7 @@ public class Project {
 
 	private String packaging; // jar or war
 
-	private String applicationName; // TODO: Differentiate this from name
+	private String applicationName;
 
 	private String language; // java, kotlin, or groovy
 

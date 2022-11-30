@@ -20,7 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.mapfiltermagic.startintermediary.model.initializr.ComponentType;
 import com.mapfiltermagic.startintermediary.model.initializr.FileType;
-import com.mapfiltermagic.startintermediary.model.initializr.Project;
+import com.mapfiltermagic.startintermediary.model.initializr.IntermediaryRequest;
 import com.mapfiltermagic.startintermediary.service.openai.CodeCompletionService;
 
 import lombok.RequiredArgsConstructor;
@@ -93,13 +93,13 @@ public class FileHandlingService {
      *
      * @param newFileData data of file to add
      * @param fileName name of the file without an extension
-     * @param project the {@link Project} to append the new file data to
+     * @param intermediaryRequest the {@link IntermediaryRequest} to append the new file data to
      * @return updated project data
      */
-    public byte[] addFileToProject(byte[] newFileData, String fileName, Project project) {
+    public byte[] addFileToProject(byte[] newFileData, String fileName, IntermediaryRequest intermediaryRequest) {
         Path tempProjectArchive = null;
         try {
-            tempProjectArchive = Files.write(new File("temp.zip").toPath(), project.getProjectData());
+            tempProjectArchive = Files.write(new File("temp.zip").toPath(), intermediaryRequest.getProjectData());
         } catch (IOException ex) {
             log.error("Encountered an exception while creating a temporary zip file => {}", ex.getMessage());
 
@@ -110,7 +110,7 @@ public class FileHandlingService {
         Map<String, String> env = new HashMap<>();
         env.put("create", "true");
         try (FileSystem fileSystem = FileSystems.newFileSystem(uri, env)) {
-            String directory = buildPathForGeneratedFile(fileName, project);
+            String directory = buildPathForGeneratedFile(fileName, intermediaryRequest);
             Path newFilePath = fileSystem.getPath(directory);
             Files.createDirectories(newFilePath.getParent());
             Files.createFile(newFilePath);
@@ -130,7 +130,7 @@ public class FileHandlingService {
     }
 
     // TODO: Refactor this to just use String.format(). URI building was totally unecessary.
-    private String buildPathForGeneratedFile(String fileName, Project project) {
+    private String buildPathForGeneratedFile(String fileName, IntermediaryRequest project) {
         try {
             UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(PROJECT_DIRECTORY_PATH_FORMAT);
             URI uri = builder.build(
@@ -165,7 +165,7 @@ public class FileHandlingService {
         return ComponentType.CONTROLLER.getPackageName();
     }
 
-    private String getFileNameWithExtension(String fileName, Project project) {
+    private String getFileNameWithExtension(String fileName, IntermediaryRequest project) {
         String updatedFilename = fileName + FileType.resolveFileExtension(project.getLanguage());
 
         log.debug("Built the following filename with extension: {}", updatedFilename);

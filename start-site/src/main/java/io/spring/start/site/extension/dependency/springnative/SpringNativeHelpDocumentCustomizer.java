@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,9 @@ class SpringNativeHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	@Override
 	public void customize(HelpDocument document) {
+		document.gettingStarted().addReferenceDocLink(String
+				.format("https://docs.spring.io/spring-native/docs/%s/reference/htmlsingle/", this.springNativeVersion),
+				"Spring Native Reference Guide");
 		BuildSystem buildSystem = this.description.getBuildSystem();
 		if (buildSystem instanceof GradleBuildSystem
 				&& buildSystem.dialect().equals(GradleBuildSystem.DIALECT_KOTLIN)) {
@@ -79,8 +82,8 @@ class SpringNativeHelpDocumentCustomizer implements HelpDocumentCustomizer {
 		model.put("cnbBuildImageCommand", mavenBuild ? "./mvnw spring-boot:build-image" : "./gradlew bootBuildImage");
 		model.put("cnbRunImageCommand", createRunImageCommand());
 		// Native buildtools plugin
-		model.put("nbtBuildImageCommand", mavenBuild ? "./mvnw package -Pnative" : "./gradlew nativeBuild");
-		model.put("nbtRunImageCommand", String.format("%s/%s", mavenBuild ? "target" : "build/native-image",
+		model.put("nbtBuildImageCommand", mavenBuild ? "./mvnw package -Pnative" : "./gradlew nativeCompile");
+		model.put("nbtRunImageCommand", String.format("%s/%s", mavenBuild ? "target" : "build/native/nativeCompile",
 				this.build.getSettings().getArtifact()));
 
 		String templateName = (this.nativeBuildToolsVersion != null) ? "spring-native" : "spring-native-0.9.x";
@@ -109,7 +112,7 @@ class SpringNativeHelpDocumentCustomizer implements HelpDocumentCustomizer {
 
 	private void handleUnsupportedDependencies(HelpDocument document) {
 		List<Dependency> unsupportedDependencies = buildDependencies()
-				.filter((candidate) -> !candidate.getFacets().contains("native")).collect(Collectors.toList());
+				.filter((candidate) -> !candidate.getFacets().contains("native")).toList();
 		if (!unsupportedDependencies.isEmpty()) {
 			StringBuilder sb = new StringBuilder("The following ");
 			sb.append((unsupportedDependencies.size() == 1) ? "dependency is " : "dependencies are ");

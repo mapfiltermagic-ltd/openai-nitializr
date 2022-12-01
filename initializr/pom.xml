@@ -38,7 +38,7 @@
 	</developers>
 
 	<properties>
-		<revision>0.13.0-SNAPSHOT</revision>
+		<revision>0.20.0-SNAPSHOT</revision>
 		<disable.checks>false</disable.checks>
 		<git.url>https://github.com/spring-io/initializr</git.url>
 		<git.connection>scm:git:https://github.com/spring-io/initializr</git.connection>
@@ -48,7 +48,7 @@
 	</properties>
 
 	<modules>
-		<module>initializr-actuator</module>
+		<!-- <module>initializr-actuator</module>
 		<module>initializr-bom</module>
 		<module>initializr-docs</module>
 		<module>initializr-generator</module>
@@ -57,7 +57,8 @@
 		<module>initializr-metadata</module>
 		<module>initializr-parent</module>
 		<module>initializr-service-sample</module>
-		<module>initializr-version-resolver</module>
+		<module>initializr-version-resolver</module> -->
+		<!-- We only need this module since it's the one with custom changes in it. -->
 		<module>initializr-web</module>
 	</modules>
 
@@ -230,5 +231,26 @@
 			</properties>
 		</profile>
 	</profiles>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>

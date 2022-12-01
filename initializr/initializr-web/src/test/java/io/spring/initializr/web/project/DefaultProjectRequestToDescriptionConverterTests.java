@@ -48,6 +48,38 @@ class DefaultProjectRequestToDescriptionConverterTests {
 	private final DefaultProjectRequestToDescriptionConverter converter = new DefaultProjectRequestToDescriptionConverter();
 
 	@Test
+	void convertWhenArtifactIdHasAccentCleanValue() {
+		ProjectRequest request = createProjectRequest();
+		request.setArtifactId("tëst-âpp");
+		ProjectDescription description = this.converter.convert(request, this.metadata);
+		assertThat(description.getArtifactId()).isEqualTo("test-app");
+	}
+
+	@Test
+	void convertWhenGroupIdHasAccentCleanValue() {
+		ProjectRequest request = createProjectRequest();
+		request.setGroupId("com.êxample.äpp");
+		ProjectDescription description = this.converter.convert(request, this.metadata);
+		assertThat(description.getGroupId()).isEqualTo("com.example.app");
+	}
+
+	@Test
+	void convertWhenNameHasAccentCleanValue() {
+		ProjectRequest request = createProjectRequest();
+		request.setName("My Demö");
+		ProjectDescription description = this.converter.convert(request, this.metadata);
+		assertThat(description.getName()).isEqualTo("My Demo");
+	}
+
+	@Test
+	void convertWhenPackageNameHasAccentCleanValue() {
+		ProjectRequest request = createProjectRequest();
+		request.setPackageName("com.êxample.äpp");
+		ProjectDescription description = this.converter.convert(request, this.metadata);
+		assertThat(description.getPackageName()).isEqualTo("com.example.app");
+	}
+
+	@Test
 	void convertWhenTypeIsInvalidShouldThrowException() {
 		ProjectRequest request = createProjectRequest();
 		request.setType("foo-build");
@@ -69,7 +101,28 @@ class DefaultProjectRequestToDescriptionConverterTests {
 	}
 
 	@Test
-	void convertWhenPlatformCompatiblityRangeIsNotSetShouldNotThrowException() {
+	void convertWhenTypeDoesNotDefineDialectTagShouldUseDefaultDialect() {
+		InitializrMetadata metadata = InitializrMetadataTestBuilder.withDefaults()
+				.addType("foo", true, "/foo.zip", GradleBuildSystem.ID, null, "test").build();
+		ProjectRequest request = createProjectRequest();
+		request.setType("foo");
+		assertThat(this.converter.convert(request, metadata).getBuildSystem().dialect())
+				.isEqualTo(GradleBuildSystem.DIALECT_GROOVY);
+	}
+
+	@Test
+	void convertWhenTypeDefinesDialectTagShouldUseDialect() {
+		InitializrMetadata metadata = InitializrMetadataTestBuilder.withDefaults()
+				.addType("foo", true, "/foo.zip", GradleBuildSystem.ID, GradleBuildSystem.DIALECT_KOTLIN, "test")
+				.build();
+		ProjectRequest request = createProjectRequest();
+		request.setType("foo");
+		assertThat(this.converter.convert(request, metadata).getBuildSystem().dialect())
+				.isEqualTo(GradleBuildSystem.DIALECT_KOTLIN);
+	}
+
+	@Test
+	void convertWhenPlatformCompatibilityRangeIsNotSetShouldNotThrowException() {
 		this.metadata = InitializrMetadataTestBuilder.withDefaults().setPlatformCompatibilityRange(null).build();
 		ProjectRequest request = createProjectRequest();
 		request.setBootVersion("1.5.9.RELEASE");

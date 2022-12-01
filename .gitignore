@@ -1,28 +1,47 @@
+### Project ###
 target
-*.iml
-*.ipr
-*.iws
-.idea
-.DS_Store
+!.mvn/wrapper/maven-wrapper.jar
+.flattened-pom.xml
+
+### STS ###
+.apt_generated
 .classpath
-.ekstazi
+.factorypath
 .project
 .settings
-.checkstyle
-*.log
-test-salesforce-login.properties
-dependency-reduced-pom.xml
-id_file
-components/camel-solr/data
-*.epoch
-.factorypath
-.pmd
+.springBeans
 .sts4-cache
-log-camel-lsp.out
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VSCode ###
 .vscode
 *.code-workspace
-components/camel-cxf/activemq-data
+
+### Start Client ###
+/start-client/public/
+/start-client/node_modules/
+/start-client/node/
+/start-client/.env
+/start-client/.cache/
+/start-client/package-lock.json
+/start-client/yarn-error.log
+/start-client/analysis
+
+### Other ###
+.DS_Store
 *.swp
-.flattened-pom.xml
 .java-version
-*.code-workspace
+*.log

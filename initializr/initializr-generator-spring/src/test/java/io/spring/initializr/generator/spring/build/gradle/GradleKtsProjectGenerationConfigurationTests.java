@@ -85,7 +85,7 @@ class GradleKtsProjectGenerationConfigurationTests {
 	}
 
 	static Stream<Arguments> gradleWrapperParameters() {
-		return Stream.of(Arguments.arguments("2.2.3.RELEASE", "6.9.2"), Arguments.arguments("2.5.0", "7.5"));
+		return Stream.of(Arguments.arguments("2.2.3.RELEASE", "6.9.3"), Arguments.arguments("2.5.0", "7.5.1"));
 	}
 
 	@ParameterizedTest(name = "Spring Boot {0}")
@@ -113,9 +113,9 @@ class GradleKtsProjectGenerationConfigurationTests {
 		assertThat(project).textFile("build.gradle.kts")
 				.containsExactly(// @formatter:off
 				"plugins {",
+				"    java",
 				"    id(\"org.springframework.boot\") version \"2.4.0\"",
 				"    id(\"io.spring.dependency-management\") version \"1.0.6.RELEASE\"",
-				"    java",
 				"}",
 				"",
 				"group = \"com.example\"",

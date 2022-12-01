@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.spring.initializr.generator.buildsystem.BillOfMaterials;
 import io.spring.initializr.generator.buildsystem.Dependency;
@@ -59,7 +60,7 @@ public abstract class GradleBuildWriter {
 	 */
 	public final void writeTo(IndentingWriter writer, GradleBuild build) {
 		GradleBuildSettings settings = build.getSettings();
-		writeImports(writer, build.tasks());
+		writeImports(writer, build.tasks(), build.snippets());
 		writeBuildscript(writer, build);
 		writePlugins(writer, build);
 		writeProperty(writer, "group", settings.getGroup());
@@ -72,10 +73,11 @@ public abstract class GradleBuildWriter {
 		writeDependencies(writer, build);
 		writeBoms(writer, build);
 		writeTasks(writer, build.tasks());
+		writeSnippets(writer, build.snippets());
 	}
 
-	private void writeImports(IndentingWriter writer, GradleTaskContainer tasks) {
-		List<String> imports = tasks.importedTypes().sorted().collect(Collectors.toList());
+	private void writeImports(IndentingWriter writer, GradleTaskContainer tasks, GradleSnippetContainer snippets) {
+		List<String> imports = Stream.concat(tasks.importedTypes(), snippets.importedTypes()).sorted().toList();
 		imports.forEach((importedType) -> writer.println("import " + importedType));
 		if (!imports.isEmpty()) {
 			writer.println();
@@ -163,24 +165,15 @@ public abstract class GradleBuildWriter {
 		if (type == null) {
 			return "implementation";
 		}
-		switch (type) {
-			case ANNOTATION_PROCESSOR:
-				return "annotationProcessor";
-			case COMPILE:
-				return "implementation";
-			case COMPILE_ONLY:
-				return "compileOnly";
-			case PROVIDED_RUNTIME:
-				return "providedRuntime";
-			case RUNTIME:
-				return "runtimeOnly";
-			case TEST_COMPILE:
-				return "testImplementation";
-			case TEST_RUNTIME:
-				return "testRuntimeOnly";
-			default:
-				throw new IllegalStateException("Unrecognized dependency type '" + type + "'");
-		}
+		return switch (type) {
+			case ANNOTATION_PROCESSOR -> "annotationProcessor";
+			case COMPILE -> "implementation";
+			case COMPILE_ONLY -> "compileOnly";
+			case PROVIDED_RUNTIME -> "providedRuntime";
+			case RUNTIME -> "runtimeOnly";
+			case TEST_COMPILE -> "testImplementation";
+			case TEST_RUNTIME -> "testRuntimeOnly";
+		};
 	}
 
 	private void writeBoms(IndentingWriter writer, GradleBuild build) {
@@ -210,6 +203,16 @@ public abstract class GradleBuildWriter {
 	}
 
 	protected abstract String invocationAsString(GradleTask.Invocation invocation);
+
+	private void writeSnippets(IndentingWriter writer, GradleSnippetContainer snippets) {
+		if (!snippets.isEmpty()) {
+			writer.println();
+		}
+		snippets.values().forEach((snippet) -> {
+			snippet.apply(writer);
+			writer.println();
+		});
+	}
 
 	protected final <T> void writeNestedCollection(IndentingWriter writer, String name, Collection<T> collection,
 			Function<T, String> itemToStringConverter) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import io.spring.initializr.generator.condition.ConditionalOnLanguage;
 import io.spring.initializr.generator.condition.ConditionalOnPackaging;
 import io.spring.initializr.generator.condition.ConditionalOnPlatformVersion;
 import io.spring.initializr.generator.io.IndentingWriterFactory;
+import io.spring.initializr.generator.language.groovy.GroovyLanguage;
 import io.spring.initializr.generator.language.java.JavaLanguage;
 import io.spring.initializr.generator.packaging.war.WarPackaging;
 import io.spring.initializr.generator.project.ProjectDescription;
@@ -42,6 +43,7 @@ import io.spring.initializr.metadata.InitializrMetadata;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 /**
  * Configuration for contributions specific to the generation of a project that will use
@@ -53,6 +55,10 @@ import org.springframework.context.annotation.Configuration;
 @ProjectGenerationConfiguration
 @ConditionalOnBuildSystem(GradleBuildSystem.ID)
 public class GradleProjectGenerationConfiguration {
+
+	private static final int LANGUAGE_PLUGINS_ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
+
+	private static final int PACKAGING_PLUGINS_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	private static final int TEST_ORDER = 100;
 
@@ -91,13 +97,19 @@ public class GradleProjectGenerationConfiguration {
 	@Bean
 	@ConditionalOnLanguage(JavaLanguage.ID)
 	public BuildCustomizer<GradleBuild> javaPluginContributor() {
-		return (build) -> build.plugins().add("java");
+		return BuildCustomizer.ordered(LANGUAGE_PLUGINS_ORDER, (build) -> build.plugins().add("java"));
+	}
+
+	@Bean
+	@ConditionalOnLanguage(GroovyLanguage.ID)
+	public BuildCustomizer<GradleBuild> groovyPluginContributor() {
+		return BuildCustomizer.ordered(LANGUAGE_PLUGINS_ORDER, (build) -> build.plugins().add("groovy"));
 	}
 
 	@Bean
 	@ConditionalOnPackaging(WarPackaging.ID)
 	public BuildCustomizer<GradleBuild> warPluginContributor() {
-		return (build) -> build.plugins().add("war");
+		return BuildCustomizer.ordered(PACKAGING_PLUGINS_ORDER, (build) -> build.plugins().add("war"));
 	}
 
 	@Bean
@@ -173,17 +185,8 @@ public class GradleProjectGenerationConfiguration {
 		@Bean
 		@ConditionalOnPlatformVersion("2.2.0.M3")
 		BuildCustomizer<GradleBuild> testTaskContributor() {
-			return new BuildCustomizer<GradleBuild>() {
-				@Override
-				public void customize(GradleBuild build) {
-					build.tasks().customize("test", (test) -> test.invoke("useJUnitPlatform"));
-				}
-
-				@Override
-				public int getOrder() {
-					return TEST_ORDER;
-				}
-			};
+			return BuildCustomizer.ordered(TEST_ORDER,
+					(build) -> build.tasks().customize("test", (test) -> test.invoke("useJUnitPlatform")));
 		}
 
 		@Bean
@@ -216,17 +219,8 @@ public class GradleProjectGenerationConfiguration {
 		@Bean
 		@ConditionalOnPlatformVersion("2.2.0.M3")
 		BuildCustomizer<GradleBuild> testTaskContributor() {
-			return new BuildCustomizer<GradleBuild>() {
-				@Override
-				public void customize(GradleBuild build) {
-					build.tasks().customizeWithType("Test", (test) -> test.invoke("useJUnitPlatform"));
-				}
-
-				@Override
-				public int getOrder() {
-					return TEST_ORDER;
-				}
-			};
+			return BuildCustomizer.ordered(TEST_ORDER,
+					(build) -> build.tasks().customizeWithType("Test", (test) -> test.invoke("useJUnitPlatform")));
 		}
 
 		@Bean

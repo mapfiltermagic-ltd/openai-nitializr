@@ -4,6 +4,8 @@ import set from 'lodash.set'
 
 import Extend from '../../Extend.json'
 import { isInRange, parseReleases, parseVersion } from './Version'
+import { getHttpMethods } from './CodeGenUtils'
+import { getDefaultHttpMethod } from './CodeGenUtils'
 
 const PROPERTIES_MAPPING_URL = {
   type: 'project',
@@ -17,6 +19,7 @@ const PROPERTIES_MAPPING_URL = {
   description: 'meta.description',
   packageName: 'meta.packageName',
   dependencies: 'dependencies',
+  httpMethod: 'httpMethod',
 }
 
 export const getInfo = function getInfo(url) {
@@ -226,6 +229,7 @@ export const getLists = json => {
         text: `${packaging.name}`,
       })),
     },
+    httpMethod: getHttpMethods(),
     dependencies: deps,
   }
 }
@@ -244,6 +248,7 @@ export const getDefaultValues = json => {
       packageName: get(json, 'packageName.default'),
       java: get(json, 'javaVersion.default'),
     },
+    httpMethod: getDefaultHttpMethod(),
     dependencies: [],
   }
 }

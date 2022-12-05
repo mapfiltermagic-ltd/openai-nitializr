@@ -9,6 +9,7 @@ import FieldInput from './FieldInput'
 import FieldRadio from './FieldRadio'
 import Warnings from './Warnings'
 import useWindowsUtils from '../../utils/WindowsUtils'
+import { getHttpMethods } from '../../utils/CodeGenUtils'
 import { AppContext } from '../../reducer/App'
 import { Button, Radio } from '../form'
 import { Dependency } from '../dependency'
@@ -151,6 +152,19 @@ function Fields({
                   update({ meta: { java: value } })
                 }}
               />
+            </Control>
+            <Control text='Code Generation'>
+              <hr className='divider-code-generation' />
+              <Control text='Endpoint Type'>
+                <Radio
+                  name='endpointType'
+                  selected={get(values, 'httpMethod')}
+                  options={get(config, 'lists.httpMethod')}
+                  onChange={value => {
+                    update({ httpMethod: value })
+                  }}
+                />
+              </Control>
             </Control>
           </div>
         </div>

@@ -204,6 +204,13 @@ hr.divider {
   margin: 0.2rem 0 2rem;
 }
 
+hr.divider-code-generation {
+  border: 0 none;
+  border-top: 1px solid $light-border;
+  margin: 0.2rem 0 2rem;
+  width: 100%;
+}
+
 // Colset
 
 .colset {

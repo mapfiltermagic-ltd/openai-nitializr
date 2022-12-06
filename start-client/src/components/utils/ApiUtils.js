@@ -6,6 +6,7 @@ import Extend from '../../Extend.json'
 import { isInRange, parseReleases, parseVersion } from './Version'
 import { getHttpMethods } from './CodeGenUtils'
 import { getDefaultHttpMethod } from './CodeGenUtils'
+import { getDefaultPrompt } from './CodeGenUtils'
 
 const PROPERTIES_MAPPING_URL = {
   type: 'project',
@@ -20,6 +21,7 @@ const PROPERTIES_MAPPING_URL = {
   packageName: 'meta.packageName',
   dependencies: 'dependencies',
   httpMethod: 'httpMethod',
+  prompt: 'prompt'
 }
 
 export const getInfo = function getInfo(url) {
@@ -248,8 +250,9 @@ export const getDefaultValues = json => {
       packageName: get(json, 'packageName.default'),
       java: get(json, 'javaVersion.default'),
     },
-    httpMethod: getDefaultHttpMethod(),
     dependencies: [],
+    httpMethod: getDefaultHttpMethod(),
+    prompt: getDefaultPrompt(),
   }
 }
 
@@ -283,6 +286,8 @@ export const getProject = function getProject(url, values, config) {
       packageName: get(values, 'meta.packageName'),
       packaging: get(values, 'meta.packaging'),
       javaVersion: get(values, 'meta.java'),
+      httpMethod: get(values, 'httpMethod'),
+      prompt: get(values, 'prompt'),
     })
     let paramsDependencies = get(values, 'dependencies', [])
       .map(dependency => {

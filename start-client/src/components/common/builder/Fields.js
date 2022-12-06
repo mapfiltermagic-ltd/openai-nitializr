@@ -165,6 +165,17 @@ function Fields({
                   }}
                 />
               </Control>
+              <Control text='Endpoint Functionality'>
+                <FieldInput
+                  id='input-prompt'
+                  value={get(values, 'prompt')}
+                  text='I want an endpoint that'
+                  onChange={event => {
+                    update({ prompt: event.target.value })
+                  }}
+                />
+              </Control>
+
             </Control>
           </div>
         </div>

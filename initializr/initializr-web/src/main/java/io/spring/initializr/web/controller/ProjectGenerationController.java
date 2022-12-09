@@ -70,9 +70,9 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 
 	private static final Log logger = LogFactory.getLog(ProjectGenerationController.class);
 
-	private final InitializrMetadataProvider metadataProvider;
+	protected final InitializrMetadataProvider metadataProvider;
 
-	private final ProjectGenerationInvoker<R> projectGenerationInvoker;
+	protected final ProjectGenerationInvoker<R> projectGenerationInvoker;
 
 	public ProjectGenerationController(InitializrMetadataProvider metadataProvider,
 			ProjectGenerationInvoker<R> projectGenerationInvoker) {
@@ -149,7 +149,7 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		}
 	}
 
-	private <T extends ArchiveEntry> Path createArchive(ProjectGenerationResult result, String fileExtension,
+	protected final <T extends ArchiveEntry> Path createArchive(ProjectGenerationResult result, String fileExtension,
 			Function<OutputStream, ? extends ArchiveOutputStream> archiveOutputStream,
 			BiFunction<File, String, T> archiveEntry, BiConsumer<T, Integer> setMode) throws IOException {
 		Path archive = this.projectGenerationInvoker.createDistributionFile(result.getRootDirectory(),
@@ -176,7 +176,7 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		return archive;
 	}
 
-	private String getEntryName(Path root, Path path) {
+	protected final String getEntryName(Path root, Path path) {
 		String entryName = root.relativize(path).toString().replace('\\', '/');
 		if (Files.isDirectory(path)) {
 			entryName += "/";
@@ -184,14 +184,14 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		return entryName;
 	}
 
-	private int getUnixMode(String wrapperScript, String entryName, Path path) {
+	protected final int getUnixMode(String wrapperScript, String entryName, Path path) {
 		if (Files.isDirectory(path)) {
 			return UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM;
 		}
 		return UnixStat.FILE_FLAG | (entryName.equals(wrapperScript) ? 0755 : UnixStat.DEFAULT_FILE_PERM);
 	}
 
-	private String generateFileName(R request, String extension) {
+	protected final String generateFileName(R request, String extension) {
 		String candidate = (StringUtils.hasText(request.getArtifactId()) ? request.getArtifactId()
 				: this.metadataProvider.get().getArtifactId().getContent());
 		String tmp = candidate.replaceAll(" ", "_");
@@ -203,13 +203,13 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		}
 	}
 
-	private static String getWrapperScript(ProjectDescription description) {
+	protected static final String getWrapperScript(ProjectDescription description) {
 		BuildSystem buildSystem = description.getBuildSystem();
 		String script = buildSystem.id().equals(MavenBuildSystem.ID) ? "mvnw" : "gradlew";
 		return (description.getBaseDirectory() != null) ? description.getBaseDirectory() + "/" + script : script;
 	}
 
-	private ResponseEntity<byte[]> upload(Path archive, Path dir, String fileName, String contentType)
+	protected final ResponseEntity<byte[]> upload(Path archive, Path dir, String fileName, String contentType)
 			throws IOException {
 		byte[] bytes = Files.readAllBytes(archive);
 		logger.info(String.format("Uploading: %s (%s bytes)", archive, bytes.length));
@@ -218,7 +218,7 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		return result;
 	}
 
-	private ResponseEntity<byte[]> createResponseEntity(byte[] content, String contentType, String fileName) {
+	protected final ResponseEntity<byte[]> createResponseEntity(byte[] content, String contentType, String fileName) {
 		String contentDispositionValue = "attachment; filename=\"" + fileName + "\"";
 		return ResponseEntity.ok().header("Content-Type", contentType)
 				.header("Content-Disposition", contentDispositionValue).body(content);

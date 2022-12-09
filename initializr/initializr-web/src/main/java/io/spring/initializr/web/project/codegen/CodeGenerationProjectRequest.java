@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.web.project;
+package io.spring.initializr.web.project.codegen;
+
+import io.spring.initializr.web.project.ProjectRequest;
+import io.spring.initializr.web.project.WebProjectRequest;
 
 /**
  * A custom {@link ProjectRequest} with an additional two fields to support code

@@ -13,9 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.spring.initializr.web.project.codegen;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Auto-configuration for project generator and web endpoints that support code
- * generation.
+ * Holds the information passed back from the intermediary backend application.
+ *
+ * @author Tony Murillo
  */
-package io.spring.initializr.web.autoconfigure.codegen;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class IntermediaryResponse {
+
+	private byte[] archiveContents;
+
+}

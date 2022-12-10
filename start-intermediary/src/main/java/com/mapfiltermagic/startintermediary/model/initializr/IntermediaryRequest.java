@@ -18,7 +18,7 @@ public class IntermediaryRequest {
 
 	private String prompt;
 
-	private String endpointType;
+	private String httpMethod;
 
 	private String name;
  

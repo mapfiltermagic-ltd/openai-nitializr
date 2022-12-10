@@ -14,6 +14,7 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -57,6 +58,7 @@ public class CodeCompletionServiceTest {
         codeCompletionService = new CodeCompletionService(openAIService);
     }
 
+    @Disabled
     @Test
     public void getCodeCompletion_HappyPath() throws Exception {
         OpenAIResponse openAIResponse = getOpenAIResponse(OPENAI_RESPONSE_CODE_COMPLEITION_PATH);

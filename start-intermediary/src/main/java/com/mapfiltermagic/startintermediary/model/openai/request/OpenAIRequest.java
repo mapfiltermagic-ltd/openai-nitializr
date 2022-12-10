@@ -21,7 +21,7 @@ public class OpenAIRequest {
     @JsonProperty("max_tokens")
     private int maxTokens; // maximum number of tokens to generate in the completion
 
-    @JsonProperty("top_p")
+    // @JsonProperty("top_p")
     @JsonIgnore
     private int topP; // alternative to sampling with temperature, called nucleus sampling
 

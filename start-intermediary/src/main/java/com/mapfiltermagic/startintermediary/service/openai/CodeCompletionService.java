@@ -28,7 +28,7 @@ public class CodeCompletionService {
     /**
      * An OpenAI model argument that is somewhat equivalent to a character limit.
      */
-    private static final int MAX_TOKENS_ARGUMENT = 4096;
+    private static final int MAX_TOKENS_ARGUMENT = 2000;
 
     private static final double TEMPERATURE_ARGUMENT = 0.0;
 
@@ -58,11 +58,11 @@ public class CodeCompletionService {
      * @apiNote Currently only supports the generation of a single controller or endpoint at a time.
      *
      * @param prompt what to prompt the completion model with
-     * @param endpointType which REST method the endpoint should be
+     * @param httpMethod which REST method the endpoint should be
      * @return
      */
-    public String getCodeCompletion(String prompt, String endpointType) {
-        String updatedPrompt = stagePromptForCompletionRequest(prompt, endpointType);
+    public String getCodeCompletion(String prompt, String httpMethod) {
+        String updatedPrompt = stagePromptForCompletionRequest(prompt, httpMethod);
         OpenAIRequest openAIRequest = OpenAIRequest.builder()
                 .model(MODEL_ARGUMENT)
                 .maxTokens(MAX_TOKENS_ARGUMENT)

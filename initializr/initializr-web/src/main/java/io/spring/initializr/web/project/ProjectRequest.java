@@ -30,6 +30,12 @@ public class ProjectRequest {
 
 	private List<String> dependencies = new ArrayList<>();
 
+	private String prompt;
+
+	private String httpMethod;
+
+	private String proposedFileName;
+
 	private String name;
 
 	private String type;
@@ -63,6 +69,30 @@ public class ProjectRequest {
 
 	public void setDependencies(List<String> dependencies) {
 		this.dependencies = dependencies;
+	}
+
+	public String getPrompt() {
+		return this.prompt;
+	}
+
+	public void setPrompt(String prompt) {
+		this.prompt = prompt;
+	}
+
+	public String getHttpMethod() {
+		return this.httpMethod;
+	}
+
+	public void setHttpMethod(String httpMethod) {
+		this.httpMethod = httpMethod;
+	}
+
+	public String getProposedFileName() {
+		return this.proposedFileName;
+	}
+
+	public void setProposedFileName(String proposedFileName) {
+		this.proposedFileName = proposedFileName;
 	}
 
 	public String getName() {

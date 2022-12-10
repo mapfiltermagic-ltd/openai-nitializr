@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mapfiltermagic.startintermediary.model.initializr.IntermediaryRequest;
+import com.mapfiltermagic.startintermediary.model.initializr.IntermediaryResponse;
 import com.mapfiltermagic.startintermediary.service.filehandling.FileHandlingService;
 import com.mapfiltermagic.startintermediary.service.openai.CodeCompletionService;
 
@@ -32,14 +33,14 @@ public class CodeGenerationController {
      * @return
      */
     @PostMapping("/zip")
-    public ResponseEntity<byte[]> generateCode(@RequestBody IntermediaryRequest projectRequest) {
-        byte[] generatedFileData = fileHandlingService.generateFileFromCodeCompletion(projectRequest.getPrompt(), projectRequest.getEndpointType());
+    public ResponseEntity<IntermediaryResponse> generateCode(@RequestBody IntermediaryRequest projectRequest) {
+        byte[] generatedFileData = fileHandlingService.generateFileFromCodeCompletion(projectRequest.getPrompt(), projectRequest.getHttpMethod());
         String fileName = codeCompletionService.determineFileNameFromCode(new String(generatedFileData, StandardCharsets.UTF_8));
         byte[] updatedProjectArchive = fileHandlingService.addFileToProject(generatedFileData, fileName, projectRequest);
-
+        IntermediaryResponse response = new IntermediaryResponse(updatedProjectArchive);
         return ResponseEntity.ok()
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(updatedProjectArchive);
+            .body(response);
 	}
 
 }

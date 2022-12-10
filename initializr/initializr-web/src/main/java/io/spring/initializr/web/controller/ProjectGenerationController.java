@@ -37,6 +37,7 @@ import io.spring.initializr.web.project.InvalidProjectRequestException;
 import io.spring.initializr.web.project.ProjectGenerationInvoker;
 import io.spring.initializr.web.project.ProjectGenerationResult;
 import io.spring.initializr.web.project.ProjectRequest;
+import io.spring.initializr.web.project.codegen.IntermediaryService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
@@ -71,6 +72,8 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 	private static final Log logger = LogFactory.getLog(ProjectGenerationController.class);
 
 	protected final InitializrMetadataProvider metadataProvider;
+
+	private final IntermediaryService intermediaryService = new IntermediaryService();
 
 	protected final ProjectGenerationInvoker<R> projectGenerationInvoker;
 
@@ -119,6 +122,19 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		request.setType("gradle-build");
 		byte[] gradleBuild = this.projectGenerationInvoker.invokeBuildGeneration(request);
 		return createResponseEntity(gradleBuild, "application/octet-stream", "build.gradle");
+	}
+
+	@RequestMapping("code-generation/starter.zip")
+	public ResponseEntity<byte[]> springZipCodeGeneration(R request) throws IOException {
+		ProjectGenerationResult result = this.projectGenerationInvoker.invokeProjectStructureGeneration(request);
+		Path archive = createArchive(result, "zip", ZipArchiveOutputStream::new, ZipArchiveEntry::new,
+				ZipArchiveEntry::setUnixMode);
+
+		byte[] archiveData = Files.readAllBytes(archive);
+		byte[] updatedArchiveData = this.intermediaryService.updateProject(archiveData, request);
+
+		return upload(updatedArchiveData, result.getRootDirectory(), generateFileName(request, "zip"),
+				"application/zip");
 	}
 
 	@RequestMapping("/starter.zip")
@@ -209,11 +225,19 @@ public abstract class ProjectGenerationController<R extends ProjectRequest> {
 		return (description.getBaseDirectory() != null) ? description.getBaseDirectory() + "/" + script : script;
 	}
 
-	protected final ResponseEntity<byte[]> upload(Path archive, Path dir, String fileName, String contentType)
+	private ResponseEntity<byte[]> upload(Path archive, Path dir, String fileName, String contentType)
 			throws IOException {
 		byte[] bytes = Files.readAllBytes(archive);
 		logger.info(String.format("Uploading: %s (%s bytes)", archive, bytes.length));
 		ResponseEntity<byte[]> result = createResponseEntity(bytes, contentType, fileName);
+		this.projectGenerationInvoker.cleanTempFiles(dir);
+		return result;
+	}
+
+	private ResponseEntity<byte[]> upload(byte[] archive, Path dir, String fileName, String contentType)
+			throws IOException {
+		logger.info(String.format("Uploading: %s (%s bytes)", archive, archive.length));
+		ResponseEntity<byte[]> result = createResponseEntity(archive, contentType, fileName);
 		this.projectGenerationInvoker.cleanTempFiles(dir);
 		return result;
 	}
